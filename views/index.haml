@@ -1,0 +1,40 @@
+!!!
+%html
+  %head
+    %title NearbyFYI
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
+    %script{:src => "/bootstrap/js/bootstrap.js"}
+    %script{:src => "/bootstrap/js/scrollspy.js"}
+    %link{:href => "/bootstrap/css/bootstrap.css", :rel => "stylesheet"}
+    %link{:href => "/css/application.css", :rel => "stylesheet"}
+  
+  %body
+    .container
+      .span12
+        .row
+          .span12
+            .well
+              %h1 Knight News Challenge :: Data :: Submissions
+        .row        
+          - for entry in @entries
+            .span3
+              - unless entry.competitor
+                .btn YES
+                .btn NO
+                .btn MAYBE
+            .span9
+              %h3
+                %a{"href" => entry.url}= entry.title
+              %p= entry.answer_0
+              %strong How will your project make data more useful? 
+              %p= entry.answer_1
+              %strong What's been built?
+              %p= entry.answer_5
+              %strong Who's involved?
+              %p= entry.answer_4
+            .span12
+              %hr
+
+        .row
+          .span12
+            = will_paginate @entries

@@ -1,6 +1,93 @@
 require 'nokogiri'
 require 'open-uri'
 require 'csv'
+require 'sinatra'
+require 'haml'
+require 'data_mapper'
+require 'money'
+require 'will_paginate'
+require 'will_paginate/data_mapper'
+
+# Home page
+get '/' do
+  @entries = Entry.paginate(:page => params[:page], :per_page => 30)
+  haml :index
+end
+
+get '/entry' do
+  @entry = Entry.get(params[:id])
+  haml :entry
+end
+
+get '/is_competitor' do
+  # get the entries
+  @entry = Entry.first(:competitor => nil)
+  @entries_not_evaluated_count = Entry.all(:competitor => nil).count
+  @entries_count = Entry.count
+  haml :entry
+end
+
+post '/competitor' do
+  competitor_type = params[:competitor_type]
+
+  entry = Entry.get(params[:entry_id])
+  entry.competitor = competitor_type
+  
+  if entry.save!
+    puts "SAVED ENTRY"
+  end
+
+  redirect '/is_competitor'
+end
+
+get '/similar' do
+  @entries = Entry.all(:competitor => "YES").paginate(:page => params[:page], :per_page => 100)
+  haml :index
+end
+
+get '/load-entries' do
+  csv_text = File.read('knight-entries.csv')
+  csv = CSV.parse(csv_text, :headers => true)
+  csv.each do |row|
+    row = row.to_hash.each_with_object({}){|(k,v), h| h[k.to_sym] = v}    
+    Entry.create!(row)
+  end
+  redirect '/'
+end
+
+
+
+# need install dm-sqlite-adapter
+DataMapper.setup(:default, ENV['DATABASE_URL'] || "sqlite3://#{Dir.pwd}/knight.db")
+
+class Entry
+    include DataMapper::Resource
+    property :id, Serial
+    property :title, String
+    property :url, String
+    property :amount, Integer
+    property :answer_0, Text
+    property :answer_1, Text
+    property :answer_2, Text
+    property :answer_3, Text
+    property :answer_4, Text
+    property :answer_5, Text
+    property :answer_6, Text
+    property :answer_7, Text
+    property :answer_8, Text
+    property :created_at, DateTime
+
+    # YES|NO|MAYBE
+    property :competitor, String
+end
+
+# Perform basic sanity checks and initialize all relationships
+# Call this when you've defined all your models
+DataMapper.finalize
+
+# automatically create the post table
+Entry.auto_upgrade!
+
 
 class Knight
 

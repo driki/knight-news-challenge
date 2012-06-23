@@ -1,0 +1,52 @@
+!!!
+%html
+  %head
+    %title NearbyFYI
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"}
+    %script{:src => "/bootstrap/js/bootstrap.js"}
+    %script{:src => "/bootstrap/js/scrollspy.js"}
+    %link{:href => "/bootstrap/css/bootstrap.css", :rel => "stylesheet"}
+    %link{:href => "/css/application.css", :rel => "stylesheet"}
+  
+  %body
+    .container
+      .span12
+        .row
+          .span12
+            .well
+              %h1 Knight News Challenge :: Data :: Submissions
+
+        .row
+          .span12
+            %h3= "Evaluated #{@entries_count - @entries_not_evaluated_count} of #{@entries_count} keep at it Matt"
+
+      - unless @entry.nil?
+        .row      
+          .span12
+            %h1
+              %a{"href" => @entry.url}= "#{@entry.title} (#{@entry.amount})"
+            %p= @entry.answer_0
+            %h2 How will your project make data more useful? 
+            %p= @entry.answer_1
+            %h2 What's been built?
+            %p= @entry.answer_5
+            %h2 Who's involved?
+            %p= @entry.answer_4
+            %h2 Will it work?
+            %p= @entry.answer_3
+            %h2 Revenue?
+            %p= @entry.answer_7
+            %h2= "Competitor: #{@entry.competitor}"
+          .span12
+            %hr
+          .span12
+            :javascript
+              function setCompetitor(type) {
+                document.competitor.competitor_type.value = type;
+              }
+            
+            %form{"name" => "competitor", "action" => "/competitor", "method" => "POST"}
+              %input{"type" => "hidden", "name" => "entry_id", "value" => "#{@entry.id}"}
+              %input{"type" => "hidden", "name" => "competitor_type"}
+              %button.btn-primary.btn-large{"onclick" => "setCompetitor('YES')"} YES
+              %button.btn.btn-large{"onclick" => "setCompetitor('NO')"} NO
