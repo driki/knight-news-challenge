@@ -62,7 +62,7 @@ GEM
       i18n (~> 0.4)
       json
     multi_json (1.0.4)
-    rack (1.4.1)
+    rack (1.6.13)
     sinatra (1.1.0)
       rack (~> 1.1)
       tilt (~> 1.1)
